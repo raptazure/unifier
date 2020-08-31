@@ -1,47 +1,127 @@
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
+use std::fs::{self, File, OpenOptions};
+use std::io::{self, BufReader, BufWriter, Read, Seek, SeekFrom, Write};
+use std::ops::Range;
+use std::path::{Path, PathBuf};
+
+use serde::{Deserialize, Serialize};
+use serde_json::Deserializer;
+
+use crate::{KvsError, Result};
+use std::ffi::OsStr;
+
+const COMPACTION_THRESHOLD: u64 = 1024 * 1024;
 
 /// The `KvStore` stores string key/value pairs.
 ///
-/// Key/value pairs are stored in a `HashMap` in memory and not persisted to disk.
-///
-/// Example:
+/// Key/value pairs are persisted to disk in log files. Log files are named after
+/// monotonically increasing generation numbers with a `log` extension name.
+/// A `BTreeMap` in memory stores the keys and the value locations for fast query.
 ///
 /// ```rust
-/// # use kvs::KvStore;
-/// let mut store = KvStore::new();
-/// store.set("key".to_owned(), "value".to_owned());
-/// let val = store.get("key".to_owned());
+/// # use kvs::{KvStore, Result};
+/// # fn try_main() -> Result<()> {
+/// use std::env::current_dir;
+/// let mut store = KvStore::open(current_dir()?)?;
+/// store.set("key".to_owned(), "value".to_owned())?;
+/// let val = store.get("key".to_owned())?;
 /// assert_eq!(val, Some("value".to_owned()));
+/// # Ok(())
+/// # }
 /// ```
-#[derive(Default)]
 pub struct KvStore {
-    map: HashMap<String, String>,
+    // directory for the log and other data.
+    path: PathBuf,
+    // map generation number to the file reader.
+    readers: HashMap<u64, BufReaderWithPos<File>>,
+    // writer of the current log.
+    writer: BufWriterWithPos<File>,
+    current_gen: u64,
+    index: BTreeMap<String, CommandPos>,
+    // the number of bytes representing "stale" commands that could be
+    // deleted during a compaction.
+    uncompacted: u64,
 }
 
-impl KvStore {
-    /// Create a `KvStore`
-    pub fn new() -> KvStore {
-        KvStore {
-            map: HashMap::new(),
+impl KvStore {}
+
+/// Represents the position and length of a json-serialized command in the log.
+struct CommandPos {
+    gen: u64,
+    pos: u64,
+    len: u64,
+}
+
+impl From<(u64, Range<u64>)> for CommandPos {
+    fn from((gen, range): (u64, Range<u64>)) -> Self {
+        CommandPos {
+            gen,
+            pos: range.start,
+            len: range.end - range.start,
         }
     }
+}
 
-    /// Sets the value of a string key to a string.
-    ///
-    /// If the key already exists, the previous value will be overwritten.
-    pub fn set(&mut self, key: String, value: String) {
-        self.map.insert(key, value);
+struct BufReaderWithPos<R: Read + Seek> {
+    reader: BufReader<R>,
+    pos: u64,
+}
+
+impl<R: Read + Seek> BufReaderWithPos<R> {
+    fn new(mut inner: R) -> Result<Self> {
+        let pos = inner.seek(SeekFrom::Current(0))?;
+        Ok(BufReaderWithPos {
+            reader: BufReader::new(inner),
+            pos,
+        })
+    }
+}
+
+impl<R: Read + Seek> Read for BufReaderWithPos<R> {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        let len = self.reader.read(buf)?;
+        self.pos += len as u64;
+        Ok(len)
+    }
+}
+
+impl<R: Read + Seek> Seek for BufReaderWithPos<R> {
+    fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
+        self.pos = self.reader.seek(pos)?;
+        Ok(self.pos)
+    }
+}
+
+struct BufWriterWithPos<W: Write + Seek> {
+    writer: BufWriter<W>,
+    pos: u64,
+}
+
+impl<W: Write + Seek> BufWriterWithPos<W> {
+    fn new(mut inner: W) -> Result<Self> {
+        let pos = inner.seek(SeekFrom::Current(0))?;
+        Ok(BufWriterWithPos {
+            writer: BufWriter::new(inner),
+            pos,
+        })
+    }
+}
+
+impl<W: Write + Seek> Write for BufWriterWithPos<W> {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        let len = self.writer.write(buf)?;
+        self.pos += len as u64;
+        Ok(len)
     }
 
-    /// Gets the string value of a given string key.
-    ///
-    /// Returns `None` if the given key does not exist.
-    pub fn get(&self, key: String) -> Option<String> {
-        self.map.get(&key).cloned()
+    fn flush(&mut self) -> io::Result<()> {
+        self.writer.flush()
     }
+}
 
-    /// Remove a given key
-    pub fn remove(&mut self, key: String) {
-        self.map.remove(&key);
+impl<W: Write + Seek> Seek for BufWriterWithPos<W> {
+    fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
+        self.pos = self.writer.seek(pos)?;
+        Ok(self.pos)
     }
 }
