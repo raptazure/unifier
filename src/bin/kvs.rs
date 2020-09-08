@@ -1,5 +1,6 @@
 use clap::AppSettings;
-use std::process::exit;
+use kvs::{KvStore, KvsError, Result};
+use std::{env::current_dir, process::exit};
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -33,23 +34,32 @@ enum Command {
     },
 }
 
-fn main() {
+fn main() -> Result<()> {
     let opt = Opt::from_args();
     match opt.command {
         Command::Get { key } => {
-            eprintln!("unimplemented");
-            eprintln!("{}", key);
-            exit(1);
+            let mut store = KvStore::open(current_dir()?)?;
+            if let Some(value) = store.get(key.to_string())? {
+                println!("{}", value);
+            } else {
+                println!("Ket not found.");
+            }
         }
         Command::Set { key, value } => {
-            eprintln!("unimplemented");
-            eprintln!("{}, {}", key, value);
-            exit(1);
+            let mut store = KvStore::open(current_dir()?)?;
+            store.set(key.to_string(), value.to_string())?;
         }
         Command::Remove { key } => {
-            eprintln!("unimplemented");
-            eprintln!("{}", key);
-            exit(1);
+            let mut store = KvStore::open(current_dir()?)?;
+            match store.remove(key.to_string()) {
+                Ok(()) => {}
+                Err(KvsError::KeyNotFound) => {
+                    println!("Key not found");
+                    exit(1);
+                }
+                Err(e) => return Err(e),
+            }
         }
     }
+    Ok(())
 }
