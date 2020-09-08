@@ -2,5 +2,7 @@
     <img width="200" alt="Logo" src="extra/logo.png">
 </p>
 <p align="center">
-Key-Value Store [Practical Networked Applications in Rust from PingCAP]
+A multi-threaded, persistent key/value store.
 </p>
+
+Thanks to [Talent Plan](https://github.com/pingcap/talent-plan)
