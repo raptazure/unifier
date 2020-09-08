@@ -5,5 +5,5 @@
 A multi-threaded, persistent key/value store
 </p>
 <p align="center">
-Thanks to PingCAP and [talent plan](https://github.com/pingcap/talent-plan).
+Thanks to https://github.com/pingcap/talent-plan
 </p>
