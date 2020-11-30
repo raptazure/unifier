@@ -8,7 +8,8 @@
 
 ## Quick start
 
-- run: `cargo run`
+- run server: `cargo run --bin kvs-server`
+- run client: `cargo run --bin kvs-client`
 - build: `cargo build`
 - test: `cargo test`
 - benchmark: `cargo bench`
