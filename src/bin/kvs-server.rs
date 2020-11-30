@@ -4,7 +4,7 @@ extern crate log;
 extern crate clap;
 
 use kvs::*;
-use log::LeverFilter;
+use log::LevelFilter;
 use std::env::current_dir;
 use std::fs;
 use std::net::SocketAddr;
@@ -14,6 +14,15 @@ use structopt::StructOpt;
 const DEFAULT_LISTENING_ADDRESS: &str = "127.0.0.1:4000";
 const DEFAULT_ENGINE: Engine = Engine::kvs;
 
+arg_enum! {
+    #[allow(non_camel_case_types)]
+    #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+    enum Engine {
+        kvs,
+        sled
+    }
+}
+
 #[derive(StructOpt, Debug)]
 #[structopt(name = "kvs-server")]
 struct Opt {
@@ -21,7 +30,7 @@ struct Opt {
         long,
         help = "Sets the listening address",
         value_name = "IP:PORT",
-        raw(deafault_value = "DEFAULT_LISTENING_ADDRESS"),
+        default_value = DEFAULT_LISTENING_ADDRESS,
         parse(try_from_str)
     )]
     addr: SocketAddr,
@@ -29,22 +38,13 @@ struct Opt {
         long,
         help = "Sets the storage engine",
         value_name = "ENGINE-NAME",
-        raw(possible_values = "&Engine::variants()")
+        possible_values = &Engine::variants()
     )]
     engine: Option<Engine>,
 }
 
-arg_enum! {
-    #[allow(non_camel_case_types)]
-    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-    enum Engine {
-        kvs,
-        sled
-    }
-}
-
 fn main() {
-    env_logger::builder().filter_level(LeverFilter::Into).init();
+    env_logger::builder().filter_level(LevelFilter::Info).init();
     let mut opt = Opt::from_args();
     let res = current_engine().and_then(move |curr_engine| {
         if opt.engine.is_none() {
@@ -54,9 +54,8 @@ fn main() {
             error!("Wrong engine!");
             exit(1);
         }
-        run(opt);
+        run(opt)
     });
-
     if let Err(e) = res {
         error!("{}", e);
         exit(1);
@@ -74,10 +73,7 @@ fn run(opt: Opt) -> Result<()> {
 
     match engine {
         Engine::kvs => run_with_engine(KvStore::open(current_dir()?)?, opt.addr),
-        Engine::sled => run_with_engine(
-            SledKvsEngine::new(sled::Db::start_default(current_dir()?)?),
-            opt.addr,
-        ),
+        Engine::sled => run_with_engine(SledKvsEngine::new(sled::open(current_dir()?)?), opt.addr),
     }
 }
 
