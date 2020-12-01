@@ -10,7 +10,8 @@ pub use error::{KvsError, Result};
 pub use server::KvsServer;
 
 mod client;
-mod common;
 mod engines;
 mod error;
+mod protocol;
 mod server;
+pub mod thread_pool;
