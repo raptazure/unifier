@@ -3,14 +3,14 @@ extern crate log;
 #[macro_use]
 extern crate clap;
 
-use kvs::thread_pool::*;
-use kvs::*;
 use log::LevelFilter;
 use std::env::{self, current_dir};
 use std::fs;
 use std::net::SocketAddr;
 use std::process::exit;
 use structopt::StructOpt;
+use unitykv::thread_pool::*;
+use unitykv::*;
 
 const DEFAULT_LISTENING_ADDRESS: &str = "127.0.0.1:4000";
 const DEFAULT_ENGINE: Engine = Engine::kvs;
@@ -25,7 +25,7 @@ arg_enum! {
 }
 
 #[derive(StructOpt, Debug)]
-#[structopt(name = "kvs-server")]
+#[structopt(name = "unitykv-server")]
 struct Opt {
     #[structopt(
         long,

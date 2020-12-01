@@ -1,8 +1,8 @@
 [package]
-name = "kvs"
+name = "unitykv"
 version = "0.1.0"
 authors = ["raptazure <hermit0x9@outlook.com>"]
-description = "A multithreaded, persistent key-value store"
+description = "A multi-threaded, persistent key/value store server and client with networking over a custom protocol."
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

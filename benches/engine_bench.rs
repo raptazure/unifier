@@ -2,9 +2,9 @@
 extern crate criterion;
 
 use criterion::{BenchmarkId, Criterion};
-use kvs::{KvStore, KvsEngine};
 use rand::prelude::*;
 use tempfile::TempDir;
+use unitykv::{KvStore, KvsEngine};
 use walkdir::WalkDir;
 
 const SCALE: [u32; 7] = [4, 6, 8, 10, 12, 14, 16];

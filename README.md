@@ -9,12 +9,12 @@
 ## Quick start
 
 - Build: `cargo build`
-- Run server: `./target/release/kvs-server -h`
+- Run server: `unitykv-server -h`
   ```
-  kvs-server 0.1.0
+  unitykv-server 0.1.0
 
   USAGE:
-      kvs-server [OPTIONS]
+    unitykv-server [OPTIONS]
 
   FLAGS:
       -h, --help       Prints help information
@@ -24,12 +24,19 @@
           --addr <IP:PORT>          Sets the listening address [default: 127.0.0.1:4000]
           --engine <ENGINE-NAME>    Sets the storage engine [possible values: kvs, sled]
   ```
-- Run client: `./target/release/kvs-client -h`
-  ```
-  kvs-client 0.1.0
+  Note: If `--engine` is specified, then `ENGINE-NAME` must be either "kvs", in which
+  case the built-in engine is used, or "sled", in which case sled is used. If
+  this is the first run (there is no data previously persisted) then the default
+  value is "kvs"; if there is previously persisted data then the default is the
+  engine already in use. If data was previously persisted with a different
+  engine than selected, print an error and exit with a non-zero exit code.
 
-  USAGE:
-      kvs-client <SUBCOMMAND>
+- Run client: `unitykv-client -h`
+  ```
+  unitykv-client 0.1.0
+
+	USAGE:
+    unitykv-client <SUBCOMMAND>
 
   FLAGS:
       -h, --help       Prints help information
@@ -41,13 +48,19 @@
       set    Set the value of a string key to a string
   ```
 
-## Features
+## Why unity
 
-- WIP
+- Multi-threaded: many threads are created within a process, executing independently but concurrently sharing process resources to finish tasks in a much faster way. This efficiency comes from the unity of threads.
+- Traits for intergration:
+  - Two key-value store engines. `KvsEngine` trait defines the storage interface. `KvStore` implements `KvsEngine` for the `kvs` storage engine and `SledKvsEngine` implements `KvsEngine` for the `sled` storage engine.  
+  - Three threadpool implementations. `ThreadPool` trait contains methods that create a new thread pool, immediately spawning the specified number of threads, and that spawn a function into the threadpool. `NaiveThreadPool` implements `ThreadPool` and spawns a new thread every time the `spawn` method is called. `RayonThreadPool` implements `ThreadPool` using a data parallelism library called [rayon](https://github.com/rayon-rs/rayon). And `SharedQueueThreadPool` implements `ThreadPool` using a shared queue.
+  - Different kinds of engines and threadpools to choose is the unity of implementations.
+- Built on top of open-source projects and online tutorials, this is the unity of crates and experiences.
+- I have been playing _Assassin's Creed Unity_ recently :)
 
 ## Benchmark
 
-Compared with [sled](https://github.com/spacejam/sled) (a concurrent embedded kv database), `kvs` engine takes samller space and offers faster speed. The benchmark results are as follows:
+Compared with [sled](https://github.com/spacejam/sled) (a concurrent embedded key-value database), `kvs` engine takes samller space and offers faster speed. The benchmark results are as follows:
 
 <br/>
 
