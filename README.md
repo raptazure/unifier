@@ -3,7 +3,7 @@
     <img width="180" alt="Logo" src="extra/logo.png">
 </p>
 <p align="center">
-    A multi-threaded, persistent key/value store server and client with synchronous networking over a custom protocol.
+    A multi-threaded, persistent key/value store server and client with networking over a custom protocol.
 </p>
 
 ## Quick start
@@ -43,11 +43,14 @@
 
 ## Features
 
-- x
+- WIP
 
 ## Benchmark
 
 Compared with [sled](https://github.com/spacejam/sled) (a concurrent embedded kv database), `kvs` engine takes samller space and offers faster speed. The benchmark results are as follows:
+
+<br/>
+
 <img src="extra/line.png" alt="line">
 <img src="extra/kvs_8.png" alt="kvs_8">
 <img src="extra/sled_8.png" alt="sled_8">
