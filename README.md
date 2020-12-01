@@ -47,7 +47,7 @@
 
 ## Benchmark
 
-Compared with [sled](https://github.com/spacejam/sled) (a concurrent embedded kv database), `kvs` engine takes samller space and offers faster speed. The benchmark result is as follows:
+Compared with [sled](https://github.com/spacejam/sled) (a concurrent embedded kv database), `kvs` engine takes samller space and offers faster speed. The benchmark results are as follows:
 <img src="extra/line.png" alt="line">
 <img src="extra/kvs_8.png" alt="kvs_8">
 <img src="extra/sled_8.png" alt="sled_8">
