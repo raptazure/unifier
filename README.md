@@ -29,7 +29,7 @@
   this is the first run (there is no data previously persisted) then the default
   value is "kvs"; if there is previously persisted data then the default is the
   engine already in use. If data was previously persisted with a different
-  engine than selected, It will print an error.
+  engine than selected, it will print an error.
 - Run client: `unitykv-client -h`
   ```
   unitykv-client 0.1.0
@@ -52,7 +52,7 @@
 - Multi-threaded: many threads are created within a process, executing independently but concurrently sharing process resources to finish tasks in a much faster way. This efficiency comes from the unity of threads.
 - Traits for intergration:
   - Two key-value store engines. `KvsEngine` trait defines the storage interface. `KvStore` implements `KvsEngine` for the `kvs` storage engine and `SledKvsEngine` implements `KvsEngine` for the `sled` storage engine.  
-  - Three threadpool implementations. `ThreadPool` trait contains methods that create a new thread pool, immediately spawning the specified number of threads, and that spawn a function into the threadpool. `NaiveThreadPool` implements `ThreadPool` and spawns a new thread every time the `spawn` method is called. `RayonThreadPool` implements `ThreadPool` using a data parallelism library called [rayon](https://github.com/rayon-rs/rayon). And `SharedQueueThreadPool` implements `ThreadPool` using a shared queue.
+  - Three threadpool implementations. `ThreadPool` trait contains methods that create a new thread pool to spawn the specified number of threads, and that spawn a function into the threadpool. `NaiveThreadPool` implements `ThreadPool` and spawns a new thread every time the `spawn` method is called. `RayonThreadPool` implements `ThreadPool` using a data parallelism library called [rayon](https://github.com/rayon-rs/rayon). And `SharedQueueThreadPool` implements `ThreadPool` using a shared queue.
   - Different kinds of engines and threadpools to choose is the unity of implementations.
 - Built on top of open-source projects and online tutorials, this is the unity of crates and experiences.
 - I have been playing _Assassin's Creed Unity_ recently.  :)
