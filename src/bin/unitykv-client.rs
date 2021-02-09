@@ -2,13 +2,13 @@ use clap::AppSettings;
 use std::net::SocketAddr;
 use std::process::exit;
 use structopt::StructOpt;
-use unitykv::{KvsClient, Result};
+use unifier::{KvsClient, Result};
 
 const DEFAULT_LISTENING_ADDRESS: &str = "127.0.0.1:4000";
 const ADDRESS_FORMAT: &str = "IP:PORT";
 
 #[derive(StructOpt, Debug)]
-#[structopt(name = "unitykv-client", 
+#[structopt(name = "unifier-client", 
             global_settings = &
         [AppSettings::DisableHelpSubcommand, AppSettings::VersionlessSubcommands])]
 

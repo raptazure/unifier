@@ -9,8 +9,8 @@ use std::fs;
 use std::net::SocketAddr;
 use std::process::exit;
 use structopt::StructOpt;
-use unitykv::thread_pool::*;
-use unitykv::*;
+use unifier::thread_pool::*;
+use unifier::*;
 
 const DEFAULT_LISTENING_ADDRESS: &str = "127.0.0.1:4000";
 const DEFAULT_ENGINE: Engine = Engine::kvs;
@@ -25,7 +25,7 @@ arg_enum! {
 }
 
 #[derive(StructOpt, Debug)]
-#[structopt(name = "unitykv-server")]
+#[structopt(name = "unifier-server")]
 struct Opt {
     #[structopt(
         long,

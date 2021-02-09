@@ -9,12 +9,12 @@
 ## Quick start
 
 - Build: `cargo build`
-- Run server: `unitykv-server -h`
+- Run server: `unifier-server -h`
   ```
-  unitykv-server 0.1.0
+  unifier-server 0.1.0
 
   USAGE:
-    unitykv-server [OPTIONS]
+    unifier-server [OPTIONS]
 
   FLAGS:
       -h, --help       Prints help information
@@ -30,12 +30,12 @@
   value is "kvs"; if there is previously persisted data then the default is the
   engine already in use. If data was previously persisted with a different
   engine than selected, it will print an error.
-- Run client: `unitykv-client -h`
+- Run client: `unifier-client -h`
   ```
-  unitykv-client 0.1.0
+  unifier-client 0.1.0
 
 	USAGE:
-    unitykv-client <SUBCOMMAND>
+    unifier-client <SUBCOMMAND>
 
   FLAGS:
       -h, --help       Prints help information
@@ -47,7 +47,7 @@
       set    Set the value of a string key to a string
   ```
 
-## Why unity
+## Why unifier (unity.kv)?
 
 - Multi-threaded: many threads are created within a process, executing independently but concurrently sharing process resources to finish tasks in a much faster way. This efficiency comes from the unity of threads.
 - Traits for intergration:

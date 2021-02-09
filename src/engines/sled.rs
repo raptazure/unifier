@@ -33,7 +33,7 @@ impl KvsEngine for SledKvsEngine {
     fn remove(&self, key: String) -> Result<()> {
         let tree: &Tree = &self.0;
         tree.remove(key)?.ok_or(KvsError::KeyNotFound)?;
-        tree.flush();
+        tree.flush().expect("tree flush!");
         Ok(())
     }
 }

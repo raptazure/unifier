@@ -1,8 +1,8 @@
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
-use unitykv::thread_pool::*;
-use unitykv::Result;
+use unifier::thread_pool::*;
+use unifier::Result;
 
 use crossbeam_utils::sync::WaitGroup;
 

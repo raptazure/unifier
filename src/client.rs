@@ -25,7 +25,7 @@ impl KvsClient {
     /// Get the value of a given key from the server
     pub fn get(&mut self, key: String) -> Result<Option<String>> {
         serde_json::to_writer(&mut self.writer, &Request::Get { key })?;
-        self.writer.flush();
+        self.writer.flush().expect("writer!");
         let resp = GetResponse::deserialize(&mut self.reader)?;
         match resp {
             GetResponse::Ok(value) => Ok(value),
@@ -47,7 +47,7 @@ impl KvsClient {
     /// Remove a string key in the server
     pub fn remove(&mut self, key: String) -> Result<()> {
         serde_json::to_writer(&mut self.writer, &Request::Remove { key })?;
-        self.writer.flush();
+        self.writer.flush().expect("writer!");
         let resp = RemoveResponse::deserialize(&mut self.reader)?;
         match resp {
             RemoveResponse::Ok(_) => Ok(()),

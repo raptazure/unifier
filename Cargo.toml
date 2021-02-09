@@ -1,5 +1,5 @@
 [package]
-name = "unitykv"
+name = "unifier"
 version = "0.1.0"
 authors = ["raptazure <hermit0x9@outlook.com>"]
 description = "A multi-threaded, persistent key/value store server and client with networking over a custom protocol."
